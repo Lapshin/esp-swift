@@ -1,0 +1,61 @@
+name: Build Apps
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Once per day at midnight
+  pull_request:
+    types: [opened, reopened, synchronize]
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build Apps
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        idf_ver:
+          - "release-v5.4"
+          - "release-v5.5"
+          - "latest"
+    container:
+      image: espressif/idf:${{ matrix.idf_ver }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Fetch Swift Version
+        shell: bash
+        run: |
+          set -e -o pipefail
+          echo "Fetching swift version..."
+          curl -sL https://raw.githubusercontent.com/swiftlang/swift-embedded-examples/main/.swift-version -o .swift-version
+          echo "swift version: $(cat .swift-version)"
+
+      - name: Install Swift
+        uses: swiftlang/swift-embedded-examples/.github/actions/install-swift@main
+
+      - name: Install IDF and build dependencies
+        shell: bash
+        run: |
+          set -e -o pipefail
+          export IDF_PYTHON_CHECK_CONSTRAINTS=yes
+          ${IDF_PATH}/install.sh --enable-ci
+          . ${IDF_PATH}/export.sh
+          pip install --upgrade 'idf-build-apps~=2.12'
+
+      - name: Build apps
+        shell: bash
+        run: |
+          set -e -o pipefail
+          echo "Exporting IDF environment variables..."
+          . ${IDF_PATH}/export.sh
+          echo "Exporting Swift environment variables..."
+          . $HOME/.local/share/swiftly/env.sh
+          echo "Building apps..."
+          idf-build-apps build --recursive --collect-app-info build_info_${{ matrix.idf_ver }}.json --disable-targets esp32 esp32s2 esp32s3
+          echo "Apps built successfully"
