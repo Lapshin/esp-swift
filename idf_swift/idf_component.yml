@@ -1,0 +1,7 @@
+version: 1.0.0
+description: Swift support component for ESP-IDF (Embedded Swift on RISC-V)
+url: https://github.com/espressif/esp-swift/tree/main/idf_swift
+issues: https://github.com/espressif/esp-swift/issues
+repository: https://github.com/espressif/esp-swift.git
+dependencies:
+  idf: ">=5.4"
