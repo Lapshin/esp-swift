@@ -1,6 +1,6 @@
 # Swift Support Component for ESP-IDF
 
-[![Component Registry](https://components.espressif.com/components/espressif/swift/badge.svg)](https://components.espressif.com/components/espressif/swift)
+[![Component Registry](https://components.espressif.com/components/espressif/idf_swift/badge.svg)](https://components.espressif.com/components/espressif/idf_swift)
 
 This component provides [Embedded Swift](https://www.swift.org/documentation/embedded-swift/) language support for ESP-IDF projects targeting RISC-V based ESP chips.
 
